@@ -167,6 +167,13 @@ public class Panel extends JPanel implements ActionListener,ChangeListener{
 	public void paintComponent(Graphics g) {
 		
 		if(maze.checkFinished()) {
+			pathLengthLable.setText("Path Length: " + maze.min_steps + " steps");
+			if (maze.total_steps > 1) {
+				if ((mode == 0) && (mode == 1)) noofChecksJLabel.setText("Total Check: " + (maze.total_steps + 1) + " steps");
+				else if (mode == 2) noofChecksJLabel.setText("Total Check: " + (maze.total_steps - 2) + " step");
+				
+				else noofChecksJLabel.setText("Total Check: " + (maze.total_steps - 1) + " step");
+			}
 			reMazeButton.setEnabled(true);
 			startSolvingButton.setEnabled(true);
 			algoBox.setEnabled(true);
@@ -180,6 +187,7 @@ public class Panel extends JPanel implements ActionListener,ChangeListener{
 		if(!flag) {
 			maze.drawPathFinder(g,mode);
 			if(maze.finish) {
+				pathLengthLable.setText("Path Length: " + maze.min_steps + " steps");
 				mazeCheckbox.setEnabled(true);
 				startSolvingButton.setEnabled(true);
 				resetButton.setEnabled(true);
@@ -197,6 +205,7 @@ public class Panel extends JPanel implements ActionListener,ChangeListener{
 		tm.start();
 		running = -1;	
 		startButton.setEnabled(true);
+		
 		repaint();
 	}
 
@@ -209,6 +218,7 @@ public class Panel extends JPanel implements ActionListener,ChangeListener{
 			initMaze();
 			reset();
 			startButton.setText("Start");
+			noofChecksJLabel.setText("Total Check: 0 step");
 		}
 		
 		
@@ -241,6 +251,8 @@ public class Panel extends JPanel implements ActionListener,ChangeListener{
 		
 		//nut reset maze
 		if(e.getSource()==resetButton) {
+			maze.min_steps = 0;
+			maze.total_steps = 0;
 			flag = true;
 			maze.resetMaze();
 			tm.start();

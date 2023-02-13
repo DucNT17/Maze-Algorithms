@@ -2,7 +2,7 @@ package GenarateMaze;
 
 import java.awt.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+
 
 public class Maze{
 	private final int MAZE_SIZE;
@@ -30,7 +30,7 @@ public class Maze{
 	private ArrayList<Cell> Cur_Neighbor;
 	private double [][] Rel_Distance;
 	private double count;
-	
+	public int min_steps, total_steps;
 	Maze(int mazeSize,int cellSize){
 		MAZE_SIZE = mazeSize;
 		CELL_SIZE = cellSize;
@@ -162,7 +162,6 @@ public class Maze{
 		tracedFromAtoB(current,next);
 		if(next == end) {
 			System.out.println("Finished");
-			finish = true;
 			genaratePathFromEndToStart();
 			return;
 		}
@@ -170,6 +169,7 @@ public class Maze{
 		if(next != end && next != null) {
 			visitedQueue.offer(next);
 			next.visitedPath = true;
+			total_steps ++;
 			next.visited = true;
 			next.drawPath(g, Color.RED);
 		}else {
@@ -187,15 +187,16 @@ public class Maze{
 		tracedFromAtoB(current,next);
 		if(next == end) {
 			System.out.println("Finished");
-			finish = true;
 			genaratePathFromEndToStart();
 			return;
 		}
 		
 		if(next != end && next != null) {
 			visitedS.push(next);
+			
 			next.visitedPath = true;
 			next.visited = true;
+			total_steps ++;
 			next.drawPath(g, Color.RED);
 		}else {
 			if(!visitedS.isEmpty()) {
@@ -245,6 +246,10 @@ public class Maze{
 		
 		if (dijkstra_dem <= w*w) {
 			dijkstra_dem += 1;
+			total_steps ++;
+			if (dijkstra_dem == w*w){
+				total_steps -= 1;
+			}
 			current = next;
 			next = findMin(Min_Distance,grids);
 			if (Min_Distance[next.row][next.col] == 1) next.parent = start;
@@ -265,7 +270,6 @@ public class Maze{
 		}
 		else {
 			dijkstra_dem = 0;
-			finish = true;
 			genaratePathFromEndToStart();
 			System.out.println(Min_Distance[end.row][end.col]);
 			System.out.println("finish");
@@ -333,6 +337,7 @@ public class Maze{
 			Map<Cell,Double> Cur = new HashMap<Cell,Double>();
 			Cur = BestRelDis(Open_State);
 			for (Cell x:Cur.keySet()) {
+				total_steps ++;
 				current = next;
 				Open_State.remove(x);
 				next = x;
@@ -350,7 +355,6 @@ public class Maze{
 							Close_State.remove(grids[i][j]);
 						}
 					}
-					finish = true;
 					return;
 				}
 					Cur_Neighbor = getNeighbor(x);
@@ -387,15 +391,17 @@ public class Maze{
 	private void genaratePathFromEndToStart() {
 		System.out.println("Nhap");
 		pathsFromAtoB.add(end);
+		min_steps = 1;
 		Cell tempParent = end.parent;
 		while(tempParent != start) {
+			min_steps ++;
 			pathsFromAtoB.add(tempParent);
 			System.out.println(tempParent.row + " " + tempParent.col);
 			tempParent = tempParent.parent;
 		}
-	
+		finish = true;
+		System.out.println(min_steps + " " + total_steps);
 	}
-	
 	
 	private void tracedFromAtoB(Cell A,Cell B) {
 		if(B!=null) {
@@ -406,13 +412,14 @@ public class Maze{
 	}	
 
 	public void initStartAndEnd() {
+		min_steps = total_steps = 0;
+		total_steps = 1;
 		for(int i = 0; i < w; i++){
 			for(int j = 0; j < w; j++){
 				Open_State.remove(grids[i][j]);
 			}
 		}
 		start = grids[new Random().nextInt(w)][new Random().nextInt(w)];
-		Open_State.put(start,Rel_Distance[start.row][start.col]);
 		end = grids[new Random().nextInt(w)][new Random().nextInt(w)];
 		next = start;
 		//
@@ -431,6 +438,7 @@ public class Maze{
 		if (start == end){
 			end = grids[new Random().nextInt(w)][new Random().nextInt(w)];
 		}
+		Open_State.put(start,Rel_Distance[start.row][start.col]);
 		
 		for(int i = 0;i<w;i++) {
 			for(int j = 0;j<w;j++) {
@@ -575,6 +583,7 @@ public class Maze{
 		return Neighbor;
 		
 	}
+	
 	public Map<Cell,Double> BestRelDis(Map<Cell,Double> OpenState){
 		Map<Cell, Double> BestDis = new HashMap<Cell, Double>();
 		double min = oo;
@@ -587,6 +596,7 @@ public class Maze{
 		BestDis.put(temp,min);
 		return BestDis;
 	}
+
 	
 	
 }
