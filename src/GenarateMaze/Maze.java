@@ -244,7 +244,7 @@ public class Maze{
 //	}
 	public void DijikstraSearch(Graphics g) {
 		
-		if (dijkstra_dem <= w*w) {
+		if (next != end) {
 			dijkstra_dem += 1;
 			total_steps ++;
 			if (dijkstra_dem == w*w){
